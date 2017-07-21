@@ -1,5 +1,7 @@
 package sanskrit_coders.dcs
 
+import java.io.{File, PrintWriter}
+
 import dbSchema.dcs.{DcsBook, DcsChapter, DcsSentence, DcsWord}
 import org.slf4j.LoggerFactory
 import sanskrit_coders.db.CouchdbDb
@@ -27,27 +29,36 @@ object dcsDb {
 
 object bookConverter {
   val log = LoggerFactory.getLogger(getClass.getName)
+  val iastDcsCode = "iastDcs"
 
-  def dumpBook(): Unit = {
-    val book = dcsDb.getBookByTitle(title = "Aṣṭāṅgahṛdayasaṃhitā").get
+  def dumpBook(title: String): Unit = {
+    val outfileStr = s"/home/vvasuki/couchdb-client/data/$title.tsv"
+    val outFileObj = new File(outfileStr)
+    new File(outFileObj.getParent).mkdirs
+    val destination = new PrintWriter(outFileObj)
+
+    val book = dcsDb.getBookByTitle(title = title).get
     val chapters = book.chapterIds.get.map(id => dcsDb.getChapter(id = s"DcsChapter_$id").get)
-    chapters.take(1).foreach(chapter => {
+    chapters.zipWithIndex.foreach({ case (chapter: DcsChapter, chapterId: Int) =>
       val sentences = chapter.sentenceIds.get.map(id => dcsDb.getSentence(id = s"sentence_$id").get)
       val tsvLines = sentences.zipWithIndex.map({ case (sentence: DcsSentence, sentence_id: Int) =>
         val analysisText = sentence.dcsAnalysisDecomposition.getOrElse(Seq(Seq(DcsWord(root = "NOTHING", dcsId = 0)))).zipWithIndex.map({case (wordGroup: Seq[DcsWord], wordGroupIndex: Int) =>
             wordGroup.zipWithIndex.map({case (word: DcsWord, intraGroupIndex: Int) =>
-              val devWord = transliterator.transliterate(in_str = word.root, destScheme = transliterator.scriptDevanAgarI, sourceScheme = "iast")
+              val devWord = transliterator.transliterate(in_str = word.root, destScheme = transliterator.scriptDevanAgarI, sourceScheme = iastDcsCode)
               s"${devWord} {${wordGroupIndex+1}.${intraGroupIndex+1}}"})
-        }).flatten.mkString(";;")
-        val devText = transliterator.transliterate(in_str = sentence.text, destScheme = transliterator.scriptDevanAgarI, sourceScheme = "iast")
-        Seq(sentence_id+1, devText, analysisText).mkString("\t")
+        }).flatten.mkString(";; ")
+        val devText = transliterator.transliterate(in_str = sentence.text, destScheme = transliterator.scriptDevanAgarI, sourceScheme = iastDcsCode)
+        Seq(s"${chapterId+1}-${sentence_id+1}", devText, analysisText).mkString("\t")
       })
-      log debug tsvLines.mkString("\n")
+      tsvLines.foreach(destination.println)
     })
+
+    destination.close()
   }
 
   def main(args: Array[String]): Unit = {
     dcsDb.initialize
-    dumpBook()
+//    log debug transliterator.transliterate(in_str = "siddhi", destScheme = transliterator.scriptDevanAgarI, sourceScheme = iastDcsCode)
+    dumpBook(title = "Aṣṭāṅgahṛdayasaṃhitā")
   }
 }

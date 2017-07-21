@@ -25,42 +25,7 @@
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.3.3" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.3.3" level="project" />
     <orderEntry type="library" name="Maven: net.sourceforge.findbugs:annotations:1.3.2" level="project" />
-    <orderEntry type="library" name="Maven: com.github.sanskrit-coders:indic-transliteration:1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.scala-lang:scala-xml:2.11.0-M4" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.commons:commons-csv:1.4" level="project" />
-    <orderEntry type="library" name="Maven: org.json4s:json4s_2.11:3.2.11" level="project" />
-    <orderEntry type="library" name="Maven: org.json4s:json4s-native_2.11:3.2.11" level="project" />
-    <orderEntry type="library" name="Maven: org.json4s:json4s-core_2.11:3.2.11" level="project" />
-    <orderEntry type="library" name="Maven: org.json4s:json4s-ast_2.11:3.2.11" level="project" />
-    <orderEntry type="library" name="Maven: com.thoughtworks.paranamer:paranamer:2.6" level="project" />
-    <orderEntry type="library" name="Maven: org.scala-lang:scalap:2.11.0" level="project" />
-    <orderEntry type="library" name="Maven: org.scala-lang:scala-compiler:2.11.0" level="project" />
-    <orderEntry type="library" name="Maven: org.scala-lang:scala-reflect:2.11.0" level="project" />
-    <orderEntry type="library" name="Maven: org.scala-lang.modules:scala-xml_2.11:1.0.1" level="project" />
-    <orderEntry type="library" name="Maven: org.scala-lang.modules:scala-parser-combinators_2.11:1.0.1" level="project" />
-    <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:0.9.29" level="project" />
-    <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:0.9.29" level="project" />
-    <orderEntry type="library" name="Maven: com.couchbase.lite:couchbase-lite-java:1.4.0" level="project" />
-    <orderEntry type="library" name="Maven: com.couchbase.lite:couchbase-lite-java-core:1.4.0" level="project" />
-    <orderEntry type="library" name="Maven: com.squareup.okhttp3:okhttp:3.3.1" level="project" />
-    <orderEntry type="library" name="Maven: com.squareup.okio:okio:1.8.0" level="project" />
-    <orderEntry type="library" name="Maven: com.github.oxo42:stateless4j:2.4.0" level="project" />
-    <orderEntry type="library" name="Maven: com.couchbase.lite:couchbase-lite-java-sqlite-custom:1.4.0" level="project" />
-    <orderEntry type="library" name="Maven: com.couchbase.lite:couchbase-lite-java-forestdb:1.4.0" level="project" />
-    <orderEntry type="library" name="Maven: org.scala-lang:scala-library:2.11.8" level="project" />
-    <orderEntry type="library" name="Maven: org.ektorp:org.ektorp:1.4.4" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpclient:4.3" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpcore:4.3" level="project" />
-    <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.6" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpclient-cache:4.3" level="project" />
-    <orderEntry type="library" name="Maven: commons-io:commons-io:2.0.1" level="project" />
-    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.6.4" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.slf4j:jcl-over-slf4j:1.6.4" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.3.3" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.3.3" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.3.3" level="project" />
-    <orderEntry type="library" name="Maven: net.sourceforge.findbugs:annotations:1.3.2" level="project" />
-    <orderEntry type="library" name="Maven: com.github.sanskrit-coders:indic-transliteration:1.1" level="project" />
+    <orderEntry type="module" module-name="indic-transliteration" />
     <orderEntry type="module" module-name="db-interface" />
     <orderEntry type="library" name="Maven: org.scala-lang:scala-xml:2.11.0-M4" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-csv:1.4" level="project" />
