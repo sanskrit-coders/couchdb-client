@@ -3,6 +3,7 @@ package sanskrit_coders.dcs
 import dbSchema.dcs.{DcsBook, DcsChapter, DcsSentence, DcsWord}
 import org.slf4j.LoggerFactory
 import sanskrit_coders.db.CouchdbDb
+import sanskritnlp.transliteration.transliterator
 
 class DcsBookWrapper(book: DcsBook) {
 }
@@ -33,10 +34,13 @@ object bookConverter {
     chapters.take(1).foreach(chapter => {
       val sentences = chapter.sentenceIds.get.map(id => dcsDb.getSentence(id = s"sentence_$id").get)
       val tsvLines = sentences.zipWithIndex.map({ case (sentence: DcsSentence, sentence_id: Int) =>
-        val analysisText = sentence.dcsAnalysisDecomposition.get.zipWithIndex.map({case (wordGroup: Seq[DcsWord], wordGroupIndex: Int) =>
-            wordGroup.zipWithIndex.map({case (word: DcsWord, intraGroupIndex: Int) => s"${word.root} {$wordGroupIndex.$intraGroupIndex}"})
+        val analysisText = sentence.dcsAnalysisDecomposition.getOrElse(Seq(Seq(DcsWord(root = "NOTHING", dcsId = 0)))).zipWithIndex.map({case (wordGroup: Seq[DcsWord], wordGroupIndex: Int) =>
+            wordGroup.zipWithIndex.map({case (word: DcsWord, intraGroupIndex: Int) =>
+              val devWord = transliterator.transliterate(in_str = word.root, destScheme = transliterator.scriptDevanAgarI, sourceScheme = "iast")
+              s"${devWord} {${wordGroupIndex+1}.${intraGroupIndex+1}}"})
         }).flatten.mkString(";;")
-        (sentence_id, sentence.text, analysisText)
+        val devText = transliterator.transliterate(in_str = sentence.text, destScheme = transliterator.scriptDevanAgarI, sourceScheme = "iast")
+        Seq(sentence_id+1, devText, analysisText).mkString("\t")
       })
       log debug tsvLines.mkString("\n")
     })
