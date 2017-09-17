@@ -25,6 +25,7 @@ object dcsDb {
   def getBook(id: String) = booksDb.getDoc[DcsBook](id = id)
   def getChapter(id: String) = booksDb.getDoc[DcsChapter](id = id)
   def getSentence(id: String) = sentencesDb.getDoc[DcsSentence](id = id)
+  def getSentenceLink(id: String) = f"http://vedavaapi.org:5984/dcs_sentences/sentence_$id"
 }
 
 object bookConverter {
@@ -41,14 +42,15 @@ object bookConverter {
     val chapters = book.chapterIds.get.map(id => dcsDb.getChapter(id = s"DcsChapter_$id").get)
     chapters.zipWithIndex.foreach({ case (chapter: DcsChapter, chapterId: Int) =>
       val sentences = chapter.sentenceIds.get.map(id => dcsDb.getSentence(id = s"sentence_$id").get)
-      val tsvLines = sentences.zipWithIndex.map({ case (sentence: DcsSentence, sentence_id: Int) =>
+      val tsvLines = sentences.zipWithIndex.map({ case (sentence: DcsSentence, sentenceNumber: Int) =>
+        val sentence_id = chapter.sentenceIds.get.apply(sentenceNumber)
         val analysisText = sentence.dcsAnalysisDecomposition.getOrElse(Seq(Seq(DcsWord(root = "NOTHING", dcsId = 0)))).zipWithIndex.map({case (wordGroup: Seq[DcsWord], wordGroupIndex: Int) =>
             wordGroup.zipWithIndex.map({case (word: DcsWord, intraGroupIndex: Int) =>
               val devWord = transliterator.transliterate(in_str = word.root, destScheme = transliterator.scriptDevanAgarI, sourceScheme = iastDcsCode)
               s"${devWord} {${wordGroupIndex+1}.${intraGroupIndex+1}}"})
         }).flatten.mkString(";; ")
         val devText = transliterator.transliterate(in_str = sentence.text, destScheme = transliterator.scriptDevanAgarI, sourceScheme = iastDcsCode)
-        Seq(s"${chapterId+1}-${sentence_id+1}", devText, analysisText).mkString("\t")
+        Seq(s"${chapterId+1}-${sentenceNumber+1}", devText, analysisText, dcsDb.getSentenceLink(id = s"sentence_$sentence_id")).mkString("\t")
       })
       tsvLines.foreach(destination.println)
     })
@@ -59,6 +61,6 @@ object bookConverter {
   def main(args: Array[String]): Unit = {
     dcsDb.initialize
 //    log debug transliterator.transliterate(in_str = "siddhi", destScheme = transliterator.scriptDevanAgarI, sourceScheme = iastDcsCode)
-    dumpBook(title = "Aṣṭāṅgahṛdayasaṃhitā")
+    dumpBook(title = "Bhāvaprakāśa")
   }
 }
