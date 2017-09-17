@@ -37,8 +37,8 @@ object bookConverter {
   val log = LoggerFactory.getLogger(getClass.getName)
   val iastDcsCode = "iastDcs"
 
-  def dump(title: String, outputExtension: String = "tsv"): Unit = {
-    val outfileStr = s"/home/vvasuki/couchdb-client/data/$title.$outputExtension"
+  def dump(title: String, outputExtension: String = "tsv", destScheme: String = transliterator.scriptDevanAgarI): Unit = {
+    val outfileStr = s"/home/vvasuki/couchdb-client/data/${title}_$destScheme.$outputExtension"
     val outFileObj = new File(outfileStr)
     new File(outFileObj.getParent).mkdirs
     val destination = new PrintWriter(outFileObj)
@@ -46,15 +46,14 @@ object bookConverter {
     val book = dcsDb.getBookByTitle(title = title).get
     val chapters = book.chapterIds.get.map(id => dcsDb.getChapter(id = s"DcsChapter_$id").get)
     val chapterSentences = chapters.zipWithIndex.map({ case (chapter: DcsChapter, chapterId: Int) =>
-      val sentences = chapter.sentenceIds.get.map(id => dcsDb.getSentence(id = s"sentence_$id").get)
+      val sentences = chapter.sentenceIds.get.map(id => dcsDb.getSentence(id = s"sentence_$id").get).map(_.transliterate(destScheme = destScheme))
       outputExtension match {
         case "tsv" => {
           val tsvLines = sentences.zipWithIndex.map({ case (sentence: DcsSentence, sentenceNumber: Int) =>
             val sentence_id = chapter.sentenceIds.get.apply(sentenceNumber)
             val analysisText = sentence.dcsAnalysisDecomposition.getOrElse(Seq(Seq(DcsWord(root = "NOTHING", dcsId = 0)))).zipWithIndex.map({ case (wordGroup: Seq[DcsWord], wordGroupIndex: Int) =>
               wordGroup.zipWithIndex.map({ case (word: DcsWord, intraGroupIndex: Int) =>
-                val devWord = transliterator.transliterate(in_str = word.root, destScheme = transliterator.scriptDevanAgarI, sourceScheme = iastDcsCode)
-                s"${devWord} {${wordGroupIndex + 1}.${intraGroupIndex + 1}}"
+                s"${word.root} {${wordGroupIndex + 1}.${intraGroupIndex + 1}}"
               })
             }).flatten.mkString(";; ")
             val devText = transliterator.transliterate(in_str = sentence.text, destScheme = transliterator.scriptDevanAgarI, sourceScheme = iastDcsCode)
@@ -67,7 +66,7 @@ object bookConverter {
       sentences
     })
     if (outputExtension == "json") {
-      destination.println(jsonHelper.asString(chapterSentences.flatten))
+      destination.println(jsonHelper.asString(chapterSentences))
     }
 
     destination.close()
@@ -76,6 +75,6 @@ object bookConverter {
   def main(args: Array[String]): Unit = {
     dcsDb.initialize
     //    log debug transliterator.transliterate(in_str = "siddhi", destScheme = transliterator.scriptDevanAgarI, sourceScheme = iastDcsCode)
-    dump(title = "Bhāvaprakāśa", outputExtension = "json")
+    dump(title = "Bhāvaprakāśa", outputExtension = "json", destScheme = "slp")
   }
 }
