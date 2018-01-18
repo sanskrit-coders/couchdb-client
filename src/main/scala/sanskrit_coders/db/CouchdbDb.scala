@@ -1,6 +1,7 @@
 package sanskrit_coders.db
 
-import dbSchema.dcs.DcsBook
+import java.io.ByteArrayInputStream
+
 import dbUtils.jsonHelper
 import org.ektorp.ViewQuery
 import org.ektorp.http.StdHttpClient
@@ -11,7 +12,7 @@ import scala.io.StdIn
 import scala.reflect.Manifest
 
 class CouchdbDb(val serverLocation: String, val userName: String = null, var password: String = null, val dbName: String) {
-  val log = LoggerFactory.getLogger(getClass.getName)
+  private val log = LoggerFactory.getLogger(getClass.getName)
   var db: StdCouchDbConnector = null
 
   def initialize = {
@@ -53,6 +54,15 @@ class CouchdbDb(val serverLocation: String, val userName: String = null, var pas
     val obj = Some(jsonHelper.fromString[T](doc))
     //    log.debug(obj.toString)
     obj
+  }
+
+  def updateDocString(id: String, docString: String) = {
+    val stream = new ByteArrayInputStream(docString.getBytes())
+    db.update(id, stream, docString.getBytes().length, null)
+  }
+
+  def updateDoc(id: String, doc: AnyRef) = {
+    updateDocString(id = id, docString = jsonHelper.asString(doc))
   }
 
 }

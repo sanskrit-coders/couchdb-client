@@ -2,18 +2,36 @@ package sanskrit_coders.dcs
 
 import java.io.{File, PrintWriter}
 
-import dbSchema.dcs.{DcsBook, DcsChapter, DcsSentence, DcsWord}
+import dbSchema.dcs._
 import dbUtils.jsonHelper
 import org.slf4j.LoggerFactory
 import sanskrit_coders.db.CouchdbDb
 import sanskritnlp.transliteration.transliterator
 
-class DcsBookWrapper(book: DcsBook) {
-}
+class DcsDb(val serverLocation: String, val userName: String = null, var password: String = null) {
+  val booksDb = new CouchdbDb(serverLocation = serverLocation, userName=userName, password=password, dbName = "dcs_books")
+  val sentencesDb = new CouchdbDb(serverLocation = serverLocation, userName=userName, password=password, dbName = "dcs_sentences")
+  private val log = LoggerFactory.getLogger(getClass.getName)
 
-object dcsDb {
-  val booksDb = new CouchdbDb(serverLocation = "localhost:5984", dbName = "dcs_books")
-  val sentencesDb = new CouchdbDb(serverLocation = "localhost:5984", dbName = "dcs_sentences")
+  def updateBooksDb(dcsBook: DcsObject): Boolean = {
+    val jsonMap = jsonHelper.getJsonMap(dcsBook)
+    if (dcsBook.dcsId % 50 == 0) {
+      log debug (jsonMap.toString())
+    }
+    //    sys.exit()
+    booksDb.updateDoc(id=dcsBook.getKey, doc=dcsBook)
+    return true
+  }
+
+  def updateSentenceDb(dcsSentence: DcsSentence): Boolean = {
+    val jsonMap = jsonHelper.getJsonMap(dcsSentence)
+    if (dcsSentence.dcsId % 50 == 0) {
+      log debug (jsonMap.toString())
+    }
+    //    sys.exit()
+    sentencesDb.updateDoc(id=dcsSentence.getKey, doc=dcsSentence)
+    return true
+  }
 
   def initialize(): Unit = {
     booksDb.initialize
@@ -34,8 +52,9 @@ object dcsDb {
 }
 
 object bookConverter {
-  val log = LoggerFactory.getLogger(getClass.getName)
-  val iastDcsCode = "iastDcs"
+  private val log = LoggerFactory.getLogger(getClass.getName)
+  private val iastDcsCode = "iastDcs"
+  private val dcsDb = new DcsDb(serverLocation = "localhost:5984")
 
   def dump(title: String, outputExtension: String = "tsv", destScheme: String = transliterator.scriptDevanAgarI): Unit = {
     val outfileStr = s"/home/vvasuki/couchdb-client/data/${title}_$destScheme.$outputExtension"
