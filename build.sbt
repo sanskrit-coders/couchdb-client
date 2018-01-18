@@ -14,12 +14,9 @@ libraryDependencies ++= Seq(
   ,"ch.qos.logback" % "logback-core" % "0.9.29"
   ,"org.json4s" % "json4s-ast_2.12" % "3.5.2"
   ,"org.json4s" % "json4s-native_2.12" % "3.5.2"
-  ,"com.couchbase.lite" % "couchbase-lite-java" % "1.4.0"
-  ,"org.apache.commons" % "commons-csv" % "1.4"
+  ,"org.ektorp" % "org.ektorp" % "1.4.4"
   ,"com.github.sanskrit-coders" % "indic-transliteration_2.12" % "1.8"
-  ,"com.github.sanskrit-coders" % "dict-tools_2.12" % "0.1"
-  //    ,"com.github.sanskrit-coders" % "sanskrit-lttoolbox" % "0.1"
-  //  ,"com.github.sanskrit-coders" % "db-interface" % "1.8"
+  ,"com.github.sanskrit-coders" % "db-interface_2.12" % "3.1"
 )
 
 libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.4"
