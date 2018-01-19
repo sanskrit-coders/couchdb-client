@@ -1,9 +1,9 @@
 package sanskrit_coders.db
 
-import java.io.ByteArrayInputStream
+import java.io.{ByteArrayInputStream, InputStream}
 
 import dbUtils.jsonHelper
-import org.ektorp.ViewQuery
+import org.ektorp.{StreamingViewResult, ViewQuery}
 import org.ektorp.http.StdHttpClient
 import org.ektorp.impl.{StdCouchDbConnector, StdCouchDbInstance}
 import org.slf4j.LoggerFactory
@@ -54,6 +54,16 @@ class CouchdbDb(val serverLocation: String, val userName: String = null, var pas
     val obj = Some(jsonHelper.fromString[T](doc))
     //    log.debug(obj.toString)
     obj
+  }
+
+  def getAllAsStream(): StreamingViewResult = {
+    def query = new ViewQuery().allDocs().includeDocs(true)
+    db.queryForStreamingView(query)
+  }
+
+  def getAllAsIterator[T]()(implicit mf: Manifest[T]): Iterator[T] = {
+    import scala.collection.JavaConverters._
+    getAllAsStream().iterator().asScala.map(row => jsonHelper.fromString[T](row.getDoc))
   }
 
   def updateDocString(id: String, docString: String) = {
