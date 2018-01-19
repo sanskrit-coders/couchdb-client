@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory
 import sanskrit_coders.db.CouchdbDb
 import sanskritnlp.transliteration.transliterator
 
-class DcsDb(val serverLocation: String, val userName: String = null, var password: String = null) {
+class DcsDb(val serverLocation: String = "http://localhost:5984", val userName: String = null, var password: String = null) {
   val booksDb = new CouchdbDb(serverLocation = serverLocation, userName=userName, password=password, dbName = "dcs_books")
   val sentencesDb = new CouchdbDb(serverLocation = serverLocation, userName=userName, password=password, dbName = "dcs_sentences")
   private val log = LoggerFactory.getLogger(getClass.getName)

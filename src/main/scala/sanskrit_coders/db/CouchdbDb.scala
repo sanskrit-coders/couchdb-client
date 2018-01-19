@@ -3,7 +3,7 @@ package sanskrit_coders.db
 import java.io.{ByteArrayInputStream, InputStream}
 
 import dbUtils.jsonHelper
-import org.ektorp.{StreamingViewResult, ViewQuery}
+import org.ektorp.{Options, StreamingViewResult, ViewQuery}
 import org.ektorp.http.StdHttpClient
 import org.ektorp.impl.{StdCouchDbConnector, StdCouchDbInstance}
 import org.slf4j.LoggerFactory
@@ -68,7 +68,8 @@ class CouchdbDb(val serverLocation: String, val userName: String = null, var pas
 
   def updateDocString(id: String, docString: String) = {
     val stream = new ByteArrayInputStream(docString.getBytes())
-    db.update(id, stream, docString.getBytes().length, null)
+    val options = new Options().revision(db.getCurrentRevision(id))
+    db.update(id, stream, docString.getBytes().length, options)
   }
 
   def updateDoc(id: String, doc: AnyRef) = {
