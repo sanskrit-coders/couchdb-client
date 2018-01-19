@@ -48,6 +48,8 @@ class DcsDb(val serverLocation: String, val userName: String = null, var passwor
 
   def getSentence(id: String) = sentencesDb.getDoc[DcsSentence](id = id)
 
+  def getSentences = sentencesDb.getAllAsIterator[DcsSentence]()
+
   def getSentenceLink(id: String) = f"http://vedavaapi.org:5984/dcs_sentences/sentence_$id"
 }
 
